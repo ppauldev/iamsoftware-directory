@@ -2,36 +2,64 @@ export const dynamic = 'force-dynamic';
 
 import { prisma } from '@/lib/prisma';
 import { WebsiteCard } from '@/components/WebsiteCard';
-import { CategoryNav } from '@/components/CategoryNav';
+import { CategoryFilter } from '@/components/CategoryFilter';
+import { headers } from 'next/headers';
 
-async function getFeaturedWebsites() {
+async function getFeaturedWebsites(categories?: string[]) {
+  const where = {
+    approved: true,
+    ...(categories?.length ? {
+      category: {
+        name: {
+          in: categories
+        }
+      }
+    } : {})
+  };
+
   return prisma.website.findMany({
-    where: { approved: true },
+    where,
     include: {
       category: { select: { name: true } },
       tags: { select: { name: true } },
       _count: {
         select: { ratings: true, reviews: true }
       },
-      ratings: {
-        select: { value: true }
-      }
+      ratings: true
     },
     orderBy: [
-      { ratings: { _count: 'desc' } },
-      { reviews: { _count: 'desc' } }
+      { ratings: { _count: 'desc' as const } },
+      { reviews: { _count: 'desc' as const } }
     ],
     take: 12
   });
 }
 
-export default async function HomePage() {
-  const websites = await getFeaturedWebsites();
+async function getCategories() {
+  return prisma.category.findMany({
+    include: {
+      _count: { select: { websites: true } }
+    },
+    orderBy: [
+      { websites: { _count: 'desc' } },
+      { name: 'asc' }
+    ]
+  });
+}
+
+export default async function HomePage({
+  searchParams
+}: {
+  searchParams: { categories?: string }
+}) {
+  const categories = searchParams.categories?.split(',');
+  const allCategories = await getCategories();
+  const websites = await getFeaturedWebsites(categories);
 
   if (!websites?.length) {
     return (
       <main className="container py-8">
-        <CategoryNav />
+        <CategoryFilter categories={allCategories} currentPath="/" />
         <section className="mt-8">
           <h2 className="text-2xl font-bold mb-6">Featured Websites</h2>
           <p>No websites found. Please add some websites first.</p>
@@ -49,7 +77,7 @@ export default async function HomePage() {
 
   return (
     <main className="container py-8">
-      <CategoryNav />
+      <CategoryFilter categories={allCategories} currentPath="/" />
 
       <section className="mt-8">
         <h2 className="text-2xl font-bold mb-6">Featured Websites</h2>
