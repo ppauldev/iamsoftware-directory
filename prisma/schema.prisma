@@ -22,7 +22,8 @@ model Website {
   approved    Boolean   @default(false)
   ownerId     String?
   owner       User?     @relation(fields: [ownerId], references: [id])
-  thumbnail   String?
+  thumbnail   String    @default("https://placehold.co/600x400/png")
+  preview     String    @default("https://placehold.co/1200x800/png")
 }
 
 model Category {

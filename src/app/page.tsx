@@ -1,29 +1,64 @@
-import { FeaturedWebsites } from "@/components/FeaturedWebsites";
-import { SearchBar } from "@/components/SearchBar";
-import { CategoryGrid } from "@/components/CategoryGrid";
+export const dynamic = 'force-dynamic';
 
-export default function Home() {
+import { prisma } from '@/lib/prisma';
+import { WebsiteCard } from '@/components/WebsiteCard';
+import { CategoryNav } from '@/components/CategoryNav';
+
+async function getFeaturedWebsites() {
+  return prisma.website.findMany({
+    where: { approved: true },
+    include: {
+      category: { select: { name: true } },
+      tags: { select: { name: true } },
+      _count: {
+        select: { ratings: true, reviews: true }
+      },
+      ratings: {
+        select: { value: true }
+      }
+    },
+    orderBy: [
+      { ratings: { _count: 'desc' } },
+      { reviews: { _count: 'desc' } }
+    ],
+    take: 12
+  });
+}
+
+export default async function HomePage() {
+  const websites = await getFeaturedWebsites();
+
+  if (!websites?.length) {
+    return (
+      <main className="container py-8">
+        <CategoryNav />
+        <section className="mt-8">
+          <h2 className="text-2xl font-bold mb-6">Featured Websites</h2>
+          <p>No websites found. Please add some websites first.</p>
+        </section>
+      </main>
+    );
+  }
+
+  const websitesWithAvgRating = websites.map(website => ({
+    ...website,
+    averageRating: website.ratings.length
+      ? website.ratings.reduce((acc, curr) => acc + curr.value, 0) / website.ratings.length
+      : undefined
+  }));
+
   return (
-    <div className="space-y-12">
-      <section className="text-center py-12">
-        <h1 className="text-4xl font-bold mb-4">
-          Discover Amazing Websites
-        </h1>
-        <p className="text-xl text-gray-600 mb-8">
-          Your curated directory of the best websites across the internet
-        </p>
-        <SearchBar />
-      </section>
+    <main className="container py-8">
+      <CategoryNav />
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">Featured Websites</h2>
-        <FeaturedWebsites />
+      <section className="mt-8">
+        <h2 className="text-2xl font-bold mb-6">Featured Websites</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {websitesWithAvgRating.map(website => (
+            <WebsiteCard key={website.id} website={website} />
+          ))}
+        </div>
       </section>
-
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">Browse Categories</h2>
-        <CategoryGrid />
-      </section>
-    </div>
+    </main>
   );
 } 

@@ -1,14 +1,29 @@
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat
+FROM node:20-slim AS deps
+
+# Install OpenSSL
+RUN apt-get update -y && \
+    apt-get install -y openssl libssl3 && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
+
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
+# Install OpenSSL
+RUN apt-get update -y && \
+    apt-get install -y openssl libssl3 && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN mkdir -p public
@@ -16,21 +31,25 @@ RUN mkdir -p public
 ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN npx prisma generate
-RUN npm run build
+RUN SKIP_BUILD_STATIC_GENERATION=1 npm run build
 
 # Stage 3: Runner
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN apk add --no-cache \
-    openssl \
-    libc6-compat
+# Install OpenSSL and netcat
+RUN apt-get update -y && \
+    apt-get install -y \
+      openssl \
+      libssl3 \
+      postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 nextjs
 
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules ./node_modules
@@ -45,7 +64,7 @@ COPY --from=builder /app/package.json ./package.json
 
 # Set permissions before switching user
 RUN chmod +x ./scripts/init-db.sh && \
-    chown -R nextjs:nodejs .
+    chown -R nextjs:nodejs /app
 
 USER nextjs
 
