@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const json = await request.json();
-    const { url, name, description, categoryId, tags } = json;
+    const { url, name, description, categoryId, tags, approved, thumbnail } = json;
 
     // Basic validation
     if (!url || !name || !description || !categoryId) {
@@ -32,12 +32,23 @@ export async function POST(request: Request) {
         name,
         description,
         categoryId,
-        approved: false,
+        approved: approved || false,
+        thumbnail: thumbnail || null,
         ownerId: demoUser.id,
         tags: {
-          connect: tags.map((id: string) => ({ id })),
+          connectOrCreate: tags.map((tag: string) => ({
+            where: { name: tag },
+            create: { name: tag }
+          }))
         },
       },
+      include: {
+        category: true,
+        owner: {
+          select: { name: true }
+        },
+        tags: true
+      }
     });
 
     return NextResponse.json(website);

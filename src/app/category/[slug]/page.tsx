@@ -12,13 +12,40 @@ interface CategoryPageProps {
   };
 }
 
+interface Website {
+  id: string;
+  name: string;
+  approved: boolean;
+  description: string;
+  createdAt: Date;
+  url: string;
+  thumbnail: string | null;
+  categoryId: string;
+  ownerId: string;
+  ratings: { value: number }[];
+  category: { name: string };
+  tags: { id: string; name: string }[];
+  _count: { ratings: number; reviews: number };
+}
+
+interface Category {
+  id: string;
+  name: string;
+  websites: Website[];
+}
+
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const sort = searchParams.sort || 'rating';
   const search = searchParams.q;
 
   const [category, allCategories] = await Promise.all([
-    prisma.category.findUnique({
-      where: { id: params.slug },
+    prisma.category.findFirst({
+      where: {
+        name: {
+          equals: params.slug.replace(/-/g, ' '),
+          mode: 'insensitive'
+        }
+      },
       include: {
         websites: {
           where: {
@@ -46,11 +73,24 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               : [{ name: 'asc' }]
         }
       }
-    }),
+    }) as Promise<Category | null>,
     prisma.category.findMany({
       include: {
-        _count: { select: { websites: true } }
-      }
+        websites: {
+          where: { approved: true }
+        },
+        _count: {
+          select: {
+            websites: {
+              where: { approved: true }
+            }
+          }
+        }
+      },
+      orderBy: [
+        { websites: { _count: 'desc' } },
+        { name: 'asc' }
+      ]
     })
   ]);
 
@@ -58,7 +98,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     return <div>Category not found</div>;
   }
 
-  const websitesWithAvgRating = category.websites.map(website => ({
+  const websitesWithAvgRating = category.websites.map((website: Website) => ({
     ...website,
     averageRating: website.ratings.length
       ? website.ratings.reduce((acc, curr) => acc + curr.value, 0) / website.ratings.length

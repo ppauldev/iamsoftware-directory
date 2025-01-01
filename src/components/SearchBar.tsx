@@ -1,7 +1,7 @@
 'use client';
 
 import { Input } from './ui/input';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCallback, useTransition, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { SearchSuggestions } from './SearchSuggestions';
@@ -11,6 +11,7 @@ export function SearchBar() {
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
+  const pathname = usePathname();
 
   const handleSearch = useDebounce((term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -20,7 +21,7 @@ export function SearchBar() {
       params.delete('q');
     }
     startTransition(() => {
-      router.push(`/?${params.toString()}`, { scroll: false });
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     });
   }, 300);
 

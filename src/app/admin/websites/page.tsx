@@ -2,15 +2,27 @@ import { prisma } from '@/lib/prisma';
 import AdminWebsitesClient from './client';
 
 export default async function AdminWebsitesPage() {
-  const pendingWebsites = await prisma.website.findMany({
-    where: { approved: false },
+  const websites = await prisma.website.findMany({
     include: {
       category: true,
-      owner: true,
+      owner: {
+        select: {
+          name: true
+        }
+      },
       tags: true,
+      _count: {
+        select: {
+          ratings: true,
+          reviews: true
+        }
+      }
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: [
+      { approved: 'asc' },  // Show unapproved first
+      { createdAt: 'desc' } // Then by date
+    ]
   });
 
-  return <AdminWebsitesClient websites={pendingWebsites} />;
+  return <AdminWebsitesClient websites={websites} />;
 } 
