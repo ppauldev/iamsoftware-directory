@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Website } from '@prisma/client';
+import { createSlug } from '@/lib/utils';
 
 interface WebsiteCardProps {
   website: Website & {
@@ -35,7 +36,7 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
 
       <div className="flex items-center gap-2 mb-2">
         <Link
-          href={`/category/${website.category.name}`}
+          href={`/category/${createSlug(website.category.name)}`}
           className="text-xs bg-secondary px-2 py-1 rounded-full hover:bg-secondary/80"
         >
           {website.category.name}

@@ -7,11 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-interface SortSelectProps {
-  defaultValue: string;
-}
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 const sortOptions = {
   rating: 'Most Popular',
@@ -20,29 +16,26 @@ const sortOptions = {
   name: 'Alphabetical',
 } as const;
 
-export function SortSelect({ defaultValue }: SortSelectProps) {
+export function SortSelect({ defaultValue }: { defaultValue: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const handleSort = (value: string) => {
     const params = new URLSearchParams(searchParams);
     params.set('sort', value);
     params.delete('page');
-    router.push(`?${params.toString()}`, { scroll: false });
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   return (
     <Select defaultValue={defaultValue} onValueChange={handleSort}>
       <SelectTrigger className="w-[160px] bg-background/50 hover:bg-background/80 transition-colors">
-        <SelectValue placeholder="Select order..." />
+        <SelectValue placeholder="Sort by..." />
       </SelectTrigger>
       <SelectContent align="end">
         {Object.entries(sortOptions).map(([key, label]) => (
-          <SelectItem
-            key={key}
-            value={key}
-            className="cursor-pointer"
-          >
+          <SelectItem key={key} value={key} className="cursor-pointer">
             {label}
           </SelectItem>
         ))}

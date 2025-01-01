@@ -3,16 +3,20 @@ import { PrismaClient, UserRole } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create demo user
-  const demoUser = await prisma.user.upsert({
-    where: { email: 'demo@example.com' },
-    update: {},
-    create: {
-      email: 'demo@example.com',
-      name: 'Demo User',
-      role: UserRole.ADMIN,
-    },
-  });
+  // Create multiple demo users
+  const demoUsers = await Promise.all(
+    Array.from({ length: 10 }, (_, i) => (
+      prisma.user.upsert({
+        where: { email: `demo${i + 1}@example.com` },
+        update: {},
+        create: {
+          email: `demo${i + 1}@example.com`,
+          name: `Demo User ${i + 1}`,
+          role: i === 0 ? UserRole.ADMIN : UserRole.USER,
+        },
+      })
+    ))
+  );
 
   // Create categories
   const categories = [
@@ -189,6 +193,22 @@ async function main() {
     },
   ];
 
+  // Add this function to generate random reviews
+  function generateReviews(count: number) {
+    return Array.from({ length: count }, () => ({
+      content: [
+        'Really useful tool for my workflow.',
+        'Great features, but could be better.',
+        'Exactly what I needed for my project.',
+        'Solid tool with good documentation.',
+        'Impressive functionality overall.',
+        'Has some learning curve but worth it.',
+        'Use this daily in my work.',
+        'Good value for money.',
+      ][Math.floor(Math.random() * 8)],
+    }));
+  }
+
   for (const site of websites) {
     const category = await prisma.category.findUnique({
       where: { name: site.categoryName },
@@ -215,47 +235,49 @@ async function main() {
             connect: tags.map(tag => ({ id: tag.id })),
           },
           approved: true,
-          ownerId: demoUser.id,
+          ownerId: demoUsers[0].id,
           thumbnail: site.thumbnail,
         },
       });
 
-      // Upsert review
-      const existingReview = await prisma.review.findFirst({
-        where: { websiteId: website.id, userId: demoUser.id },
-      });
+      // Generate 1-20 reviews per website with different users
+      const reviewCount = Math.floor(Math.random() * 20) + 1;
+      const reviews = generateReviews(reviewCount);
 
-      if (existingReview) {
-        await prisma.review.update({
-          where: { id: existingReview.id },
-          data: { content: site.review },
-        });
-      } else {
+      // Create multiple reviews per website with different users
+      for (const review of reviews) {
+        const randomUser = demoUsers[Math.floor(Math.random() * demoUsers.length)];
         await prisma.review.create({
           data: {
-            content: site.review,
+            content: review.content,
             websiteId: website.id,
-            userId: demoUser.id,
+            userId: randomUser.id,
+            createdAt: new Date(Date.now() - Math.random() * 10000000000),
           },
         });
       }
 
-      // Upsert rating
-      const existingRating = await prisma.rating.findFirst({
-        where: { websiteId: website.id, userId: demoUser.id },
-      });
+      // Create 1-50 ratings per website with different users
+      const ratingCount = Math.floor(Math.random() * 50) + 1;
+      const userIndices = Array.from({ length: demoUsers.length }, (_, i) => i)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.min(ratingCount, demoUsers.length));
 
-      if (existingRating) {
-        await prisma.rating.update({
-          where: { id: existingRating.id },
-          data: { value: site.rating },
-        });
-      } else {
-        await prisma.rating.create({
-          data: {
-            value: site.rating,
+      for (const userIndex of userIndices) {
+        await prisma.rating.upsert({
+          where: {
+            websiteId_userId: {
+              websiteId: website.id,
+              userId: demoUsers[userIndex].id,
+            }
+          },
+          update: {
+            value: Math.floor(Math.random() * 5) + 1,
+          },
+          create: {
+            value: Math.floor(Math.random() * 5) + 1,
             websiteId: website.id,
-            userId: demoUser.id,
+            userId: demoUsers[userIndex].id,
           },
         });
       }

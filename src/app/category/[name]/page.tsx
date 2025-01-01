@@ -1,12 +1,17 @@
 import { prisma } from '@/lib/prisma';
 import { WebsiteCard } from '@/components/WebsiteCard';
-import { CategoryNav } from '@/components/CategoryNav';
+import CategoryNav from '@/components/CategoryNav';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { SortSelect, SortSelectSkeleton } from '@/components/SortSelect';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Website, Category, Rating } from '@prisma/client';
+import { getCategories } from '@/lib/categories';
+import { Pagination, PaginationSkeleton } from '@/components/Pagination';
+import { Metadata } from 'next';
+import Script from 'next/script';
+import { createSlug } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +36,7 @@ async function getCategoryWebsites(
   const category = await prisma.category.findFirst({
     where: {
       name: {
-        equals: decodeURIComponent(categoryName),
+        equals: decodeURIComponent(categoryName).replace(/-/g, ' '),
         mode: 'insensitive'
       }
     },
@@ -113,96 +118,93 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const page = Math.max(1, Number(searchParams.page) || 1);
   const sort = (searchParams.sort || 'rating') as 'rating' | 'newest' | 'name' | 'reviews';
 
-  const data = await getCategoryWebsites(params.name, page, sort);
+  try {
+    const [data, categories] = await Promise.all([
+      getCategoryWebsites(params.name, page, sort),
+      getCategories()
+    ]);
 
-  if (!data) {
-    notFound();
-  }
+    if (!data) {
+      notFound();
+    }
 
-  // Validate page number is within bounds
-  if (page > data.pagination.totalPages) {
-    notFound();
-  }
+    // Validate page number is within bounds
+    if (page > data.pagination.totalPages) {
+      notFound();
+    }
 
-  const websitesWithAvgRating = data.websites.map(website => ({
-    ...website,
-    averageRating: website.ratings.length
-      ? website.ratings.reduce((acc, curr) => acc + curr.value, 0) / website.ratings.length
-      : undefined
-  }));
+    const websitesWithAvgRating = data.websites.map(website => ({
+      ...website,
+      averageRating: website.ratings.length
+        ? website.ratings.reduce((acc, curr) => acc + curr.value, 0) / website.ratings.length
+        : undefined
+    }));
 
-  return (
-    <main className="container py-8">
-      <nav className="flex items-center gap-2 text-muted-foreground mb-8">
-        <Link href="/" className="hover:text-foreground">
-          Home
-        </Link>
-        <span>/</span>
-        <span className="text-foreground">{data.category.name}</span>
-      </nav>
+    const jsonLd = await generateJsonLd({ params, searchParams });
 
-      <CategoryNav currentCategory={params.name} />
+    return (
+      <main className="container py-8">
+        <Script
+          id="category-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
 
-      <section className="mt-8">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 pb-6 border-b">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{data.category.name}</h1>
-            <p className="text-muted-foreground mt-2">
-              {data.category._count.websites} {data.category._count.websites === 1 ? 'website' : 'websites'}
-            </p>
+        <CategoryNav categories={categories} />
+
+        <section className="mt-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 pb-6 border-b">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">{data.category.name}</h1>
+              <p className="text-muted-foreground mt-2">
+                {data.category._count.websites} {data.category._count.websites === 1 ? 'website' : 'websites'}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 self-start sm:self-center">
+              <span className="text-sm text-muted-foreground">Sort by</span>
+              <SortSelect defaultValue={sort} />
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 self-start sm:self-center">
-            <span className="text-sm text-muted-foreground">Sort by</span>
-            <SortSelect defaultValue={sort} />
-          </div>
+          <Suspense fallback={<WebsiteGridSkeleton />}>
+            {websitesWithAvgRating.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <WebsiteGrid websites={websitesWithAvgRating} />
+            )}
+          </Suspense>
+
+          <Suspense fallback={<PaginationSkeleton />}>
+            {data.pagination.totalPages > 1 && (
+              <Pagination
+                {...data.pagination}
+                createUrl={(page) =>
+                  `/category/${encodeURIComponent(params.name)}?${new URLSearchParams({
+                    sort,
+                    page: String(page)
+                  })}`
+                }
+              />
+            )}
+          </Suspense>
+        </section>
+      </main>
+    );
+  } catch (error) {
+    return (
+      <main className="container py-8">
+        <div className="rounded-md bg-destructive/10 p-6 text-center">
+          <h1 className="text-lg font-semibold text-destructive mb-2">
+            Error Loading Category
+          </h1>
+          <p className="text-muted-foreground">
+            There was a problem loading this category. Please try again later.
+          </p>
         </div>
-
-        <Suspense fallback={<WebsiteGridSkeleton />}>
-          {websitesWithAvgRating.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <WebsiteGrid websites={websitesWithAvgRating} />
-          )}
-        </Suspense>
-
-        {data.pagination.totalPages > 1 && (
-          <nav className="flex justify-center gap-2 mt-8">
-            {data.pagination.hasPrevPage && (
-              <Link
-                href={`/category/${params.name}?page=${page - 1}&sort=${sort}`}
-                className="px-4 py-2 rounded-md bg-secondary hover:bg-secondary/80"
-              >
-                Previous
-              </Link>
-            )}
-
-            {Array.from({ length: data.pagination.totalPages }, (_, i) => (
-              <Link
-                key={i + 1}
-                href={`/category/${params.name}?page=${i + 1}&sort=${sort}`}
-                className={`px-4 py-2 rounded-md ${data.pagination.currentPage === i + 1
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary hover:bg-secondary/80'
-                  }`}
-              >
-                {i + 1}
-              </Link>
-            ))}
-
-            {data.pagination.hasNextPage && (
-              <Link
-                href={`/category/${params.name}?page=${page + 1}&sort=${sort}`}
-                className="px-4 py-2 rounded-md bg-secondary hover:bg-secondary/80"
-              >
-                Next
-              </Link>
-            )}
-          </nav>
-        )}
-      </section>
-    </main>
-  );
+      </main>
+    );
+  }
 }
 
 function EmptyState() {
@@ -233,4 +235,97 @@ function WebsiteGridSkeleton() {
       ))}
     </div>
   );
+}
+
+export async function generateMetadata({
+  params
+}: {
+  params: { name: string }
+}): Promise<Metadata> {
+  const category = await prisma.category.findFirst({
+    where: {
+      name: {
+        equals: decodeURIComponent(params.name).replace(/-/g, ' '),
+        mode: 'insensitive'
+      }
+    },
+    include: {
+      _count: { select: { websites: true } }
+    }
+  });
+
+  if (!category) return {
+    title: 'Category Not Found',
+    description: 'The requested category could not be found.'
+  };
+
+  const canonicalSlug = createSlug(category.name);
+  const canonicalUrl = `${process.env.NEXT_PUBLIC_APP_URL}/category/${canonicalSlug}`;
+
+  return {
+    title: `${category.name} Tools and Websites - AI Directory`,
+    description: `Discover ${category._count.websites} curated ${category.name.toLowerCase()} tools and websites. Browse, rate, and review the best ${category.name.toLowerCase()} resources.`,
+    openGraph: {
+      title: `${category.name} - AI Directory`,
+      description: `Explore ${category._count.websites} hand-picked ${category.name.toLowerCase()} tools and websites.`,
+      url: canonicalUrl,
+      type: 'website',
+    },
+    alternates: {
+      canonical: canonicalUrl
+    }
+  };
+}
+
+export async function generateJsonLd({
+  params,
+  searchParams
+}: {
+  params: { name: string },
+  searchParams: { sort?: string, page?: string }
+}) {
+  const category = await prisma.category.findFirst({
+    where: {
+      name: {
+        equals: decodeURIComponent(params.name).replace(/-/g, ' '),
+        mode: 'insensitive'
+      }
+    },
+    include: {
+      websites: {
+        where: { approved: true },
+        include: {
+          ratings: true,
+          _count: { select: { reviews: true } }
+        }
+      }
+    }
+  });
+
+  if (!category) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${category.name} Tools and Websites`,
+    description: `Curated collection of ${category.name.toLowerCase()} tools and websites`,
+    url: `/category/${params.name}`,
+    numberOfItems: category.websites.length,
+    itemListElement: category.websites.map((website, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'WebSite',
+        name: website.name,
+        description: website.description,
+        url: website.url,
+        aggregateRating: website.ratings.length ? {
+          '@type': 'AggregateRating',
+          ratingValue: website.ratings.reduce((acc, curr) => acc + curr.value, 0) / website.ratings.length,
+          ratingCount: website.ratings.length,
+          reviewCount: website._count.reviews
+        } : undefined
+      }
+    }))
+  };
 } 
