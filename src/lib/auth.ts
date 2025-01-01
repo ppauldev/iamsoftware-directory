@@ -1,7 +1,7 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import { prisma } from '@/lib/prisma';
-import GithubProvider from 'next-auth/providers/github';
-import { type NextAuthOptions } from 'next-auth';
+import { prisma } from "./prisma";
+import { type NextAuthOptions } from "next-auth";
+import GithubProvider from "next-auth/providers/github";
 import { Adapter } from 'next-auth/adapters';
 
 export const authOptions: NextAuthOptions = {
@@ -18,8 +18,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: user.id,
-        role: user.role,
-      },
+      }
     }),
   },
 }; 

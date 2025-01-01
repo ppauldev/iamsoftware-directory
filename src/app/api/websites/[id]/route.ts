@@ -1,6 +1,10 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { Website } from '@prisma/client';
+import { createSlug } from '@/lib/utils';
 
 export async function DELETE(
   request: Request,
@@ -24,38 +28,25 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  try {
-    const body = await request.json();
-    const { tags, ...data } = body;
-
-    const website = await prisma.website.update({
-      where: { id: params.id },
-      data: {
-        ...data,
-        tags: {
-          set: [], // First disconnect all existing tags
-          connectOrCreate: tags.map((tag: string) => ({
-            where: { name: tag },
-            create: { name: tag }
-          }))
-        }
-      },
-      include: {
-        category: true,
-        owner: {
-          select: { name: true }
-        },
-        tags: true
-      }
-    });
-
-    revalidatePath('/admin/websites');
-    return NextResponse.json(website);
-  } catch (error) {
-    console.error('Update error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update website' },
-      { status: 500 }
-    );
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return new NextResponse('Unauthorized', { status: 401 });
   }
+
+  const data = await request.json();
+
+  const website = await prisma.website.update({
+    where: { id: params.id },
+    data: {
+      ...data,
+      slug: createSlug(data.name),
+      extendedDescription: data.extendedDescription ?? null,
+    },
+    include: {
+      category: true,
+      tags: true,
+    }
+  }) satisfies Website;
+
+  return NextResponse.json(website);
 } 

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import { WebsiteCard } from '@/components/WebsiteCard';
 import CategoryNav from '@/components/CategoryNav';
@@ -26,6 +27,7 @@ interface Website {
   category: { name: string };
   tags: { id: string; name: string }[];
   _count: { ratings: number; reviews: number };
+  tier: number;
 }
 
 interface Category {
@@ -98,12 +100,32 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     return <div>Category not found</div>;
   }
 
-  const websitesWithAvgRating = category.websites.map((website: Website) => ({
-    ...website,
-    averageRating: website.ratings.length
-      ? website.ratings.reduce((acc, curr) => acc + curr.value, 0) / website.ratings.length
-      : undefined
-  }));
+  const websitesWithAvgRating = category.websites.map((website: Website) => {
+    console.log('Processing website:', {
+      id: website.id,
+      name: website.name,
+      tier: website.tier,
+      hasCategory: !!website.category,
+      hasTags: Array.isArray(website.tags)
+    });
+
+    return {
+      ...website,
+      averageRating: website.ratings.length
+        ? website.ratings.reduce((acc, curr) => acc + curr.value, 0) / website.ratings.length
+        : undefined
+    };
+  });
+
+  console.log('Category page data:', {
+    categoryName: category.name,
+    websiteCount: websitesWithAvgRating.length,
+    websites: websitesWithAvgRating.map(w => ({
+      id: w.id,
+      name: w.name,
+      tier: w.tier
+    }))
+  });
 
   return (
     <main className="container py-8">
@@ -121,11 +143,21 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {websitesWithAvgRating.map(website => (
-            <WebsiteCard key={website.id} website={website} />
-          ))}
-        </div>
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="h-[300px] rounded-lg bg-gray-100 animate-pulse" />
+              ))}
+            </div>
+          }
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {websitesWithAvgRating.map(website => (
+              <WebsiteCard key={website.id} website={website} />
+            ))}
+          </div>
+        </Suspense>
       </section>
     </main>
   );

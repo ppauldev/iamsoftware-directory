@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from '@prisma/client';
+const { PrismaClient, UserRole } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
@@ -20,18 +20,18 @@ async function main() {
 
   // Create categories
   const categories = [
-    { name: 'Development Tools', description: 'Tools for software development' },
-    { name: 'Design Resources', description: 'Design tools and assets' },
-    { name: 'Productivity', description: 'Apps to boost productivity' },
-    { name: 'Learning Platforms', description: 'Educational resources' },
-    { name: 'AI Tools', description: 'Artificial Intelligence tools' },
+    { name: 'Development Tools', slug: 'development-tools', description: 'Tools for software development' },
+    { name: 'Design Resources', slug: 'design-resources', description: 'Design tools and assets' },
+    { name: 'Productivity', slug: 'productivity', description: 'Apps to boost productivity' },
+    { name: 'Learning Platforms', slug: 'learning-platforms', description: 'Educational resources' },
+    { name: 'AI Tools', slug: 'ai-tools', description: 'Artificial Intelligence tools' },
   ];
 
   for (const cat of categories) {
     await prisma.category.upsert({
       where: { name: cat.name },
       update: {},
-      create: { name: cat.name },
+      create: { name: cat.name, slug: cat.slug },
     });
   }
 
@@ -60,6 +60,7 @@ async function main() {
       rating: 5,
       review: 'Essential platform for developers. Great collaboration features.',
       thumbnail: 'https://ui-avatars.com/api/?name=GitHub&size=600&background=1a1a1a&color=fff',
+      tier: 2, // Premium tier
     },
     {
       url: 'https://figma.com',
@@ -70,6 +71,7 @@ async function main() {
       rating: 4,
       review: 'Excellent for team design work. Browser-based is convenient.',
       thumbnail: 'https://ui-avatars.com/api/?name=Figma&size=600&background=a259ff&color=fff',
+      tier: 2,
     },
     {
       url: 'https://notion.so',
@@ -80,6 +82,7 @@ async function main() {
       rating: 5,
       review: 'Versatile tool for organizing information and team collaboration.',
       thumbnail: 'https://ui-avatars.com/api/?name=Notion&size=600&background=000000&color=fff',
+      tier: 1,
     },
     {
       url: 'https://chat.openai.com',
@@ -90,6 +93,7 @@ async function main() {
       rating: 5,
       review: 'Revolutionary AI tool for various tasks.',
       thumbnail: 'https://ui-avatars.com/api/?name=ChatGPT&size=600&background=74aa9c&color=fff',
+      tier: 1,
     },
     {
       url: 'https://vercel.com',
@@ -100,6 +104,7 @@ async function main() {
       rating: 5,
       review: 'Best-in-class deployment platform for Next.js applications.',
       thumbnail: 'https://ui-avatars.com/api/?name=Vercel&size=600&background=000000&color=fff',
+      tier: 2,
     },
     {
       url: 'https://sketch.com',
@@ -110,6 +115,7 @@ async function main() {
       rating: 4,
       review: 'Industry standard for macOS design tools.',
       thumbnail: 'https://ui-avatars.com/api/?name=Sketch&size=600&background=f7b500&color=fff',
+      tier: 1,
     },
     {
       url: 'https://linear.app',
@@ -120,6 +126,7 @@ async function main() {
       rating: 5,
       review: 'Streamlined and fast project management tool.',
       thumbnail: 'https://ui-avatars.com/api/?name=Linear&size=600&background=5E6AD2&color=fff',
+      tier: 2,
     },
     {
       url: 'https://midjourney.com',
@@ -130,6 +137,7 @@ async function main() {
       rating: 5,
       review: 'Creates stunning AI-generated artwork with simple text prompts.',
       thumbnail: 'https://ui-avatars.com/api/?name=Midjourney&size=600&background=0a0a0a&color=fff',
+      tier: 2,
     },
     {
       url: 'https://coursera.org',
@@ -140,6 +148,7 @@ async function main() {
       rating: 4,
       review: 'High-quality courses from top universities worldwide.',
       thumbnail: 'https://ui-avatars.com/api/?name=Coursera&size=600&background=0056D2&color=fff',
+      tier: 1,
     },
     {
       url: 'https://mongodb.com',
@@ -150,6 +159,7 @@ async function main() {
       rating: 4,
       review: 'Flexible and scalable database solution.',
       thumbnail: 'https://ui-avatars.com/api/?name=MongoDB&size=600&background=00ED64&color=000',
+      tier: 1,
     },
     {
       url: 'https://framer.com',
@@ -160,6 +170,7 @@ async function main() {
       rating: 5,
       review: 'Powerful prototyping with code-based customization.',
       thumbnail: 'https://ui-avatars.com/api/?name=Framer&size=600&background=0055FF&color=fff',
+      tier: 2,
     },
     {
       url: 'https://obsidian.md',
@@ -170,6 +181,7 @@ async function main() {
       rating: 5,
       review: 'Powerful note-taking with local storage and graph visualization.',
       thumbnail: 'https://ui-avatars.com/api/?name=Obsidian&size=600&background=7E6AD2&color=fff',
+      tier: 2,
     },
     {
       url: 'https://udemy.com',
@@ -180,6 +192,7 @@ async function main() {
       rating: 4,
       review: 'Wide variety of courses with practical focus.',
       thumbnail: 'https://ui-avatars.com/api/?name=Udemy&size=600&background=A435F0&color=fff',
+      tier: 1,
     },
     {
       url: 'https://replicate.com',
@@ -190,6 +203,7 @@ async function main() {
       rating: 4,
       review: 'Makes it easy to run and deploy AI models.',
       thumbnail: 'https://ui-avatars.com/api/?name=Replicate&size=600&background=1A1A1A&color=fff',
+      tier: 1,
     },
   ];
 
@@ -237,6 +251,7 @@ async function main() {
           approved: true,
           ownerId: demoUsers[0].id,
           thumbnail: site.thumbnail,
+          tier: site.tier || 1,
         },
       });
 

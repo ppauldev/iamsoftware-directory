@@ -6,23 +6,33 @@ import { useCallback, useTransition, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { SearchSuggestions } from './SearchSuggestions';
 
-export function SearchBar() {
+interface SearchBarProps {
+  defaultValue?: string;
+  onSearch?: (term: string) => void;
+}
+
+export function SearchBar({ defaultValue = '', onSearch }: SearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+  const [query, setQuery] = useState(defaultValue);
   const pathname = usePathname();
 
   const handleSearch = useDebounce((term: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (term) {
-      params.set('q', term);
+    if (onSearch) {
+      onSearch(term);
     } else {
-      params.delete('q');
+      // Default behavior for main site search
+      const params = new URLSearchParams(searchParams?.toString());
+      if (term) {
+        params.set('q', term);
+      } else {
+        params.delete('q');
+      }
+      startTransition(() => {
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      });
     }
-    startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    });
   }, 300);
 
   return (

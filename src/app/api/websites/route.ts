@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { createSlug } from '@/lib/utils';
 
 export async function POST(request: Request) {
   try {
@@ -41,6 +42,8 @@ export async function POST(request: Request) {
             create: { name: tag }
           }))
         },
+        tier: 1,
+        slug: createSlug(name),
       },
       include: {
         category: true,

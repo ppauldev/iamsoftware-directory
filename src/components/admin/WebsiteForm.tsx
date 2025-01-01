@@ -8,6 +8,9 @@ import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { createSlug } from "@/lib/utils";
 
 interface Website {
   id: string;
@@ -18,12 +21,27 @@ interface Website {
   approved: boolean;
   category: { id: string; name: string };
   tags: Array<{ id: string; name: string }>;
+  tier: number;
+  slug: string;
 }
 
 interface WebsiteFormProps {
   website?: Website;
   onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
+}
+
+interface WebsiteFormData {
+  name: string;
+  url: string;
+  description: string;
+  extendedDescription?: string | null;
+  categoryId: string;
+  thumbnail?: string;
+  approved: boolean;
+  tier: number;
+  tags: string[];
+  slug: string;
 }
 
 export function WebsiteForm({ website, onSubmit, onCancel }: WebsiteFormProps) {
@@ -39,7 +57,9 @@ export function WebsiteForm({ website, onSubmit, onCancel }: WebsiteFormProps) {
     categoryId: website?.category?.id || '',
     thumbnail: website?.thumbnail || '',
     approved: website?.approved || false,
+    tier: website?.tier || 1,
     tags: website?.tags.map(t => t.name) || [],
+    slug: website?.slug || '',
   });
 
   useEffect(() => {
@@ -66,7 +86,11 @@ export function WebsiteForm({ website, onSubmit, onCancel }: WebsiteFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await onSubmit(formData);
+      const dataToSubmit = {
+        ...formData,
+        slug: createSlug(formData.name),
+      };
+      await onSubmit(dataToSubmit);
       toast({
         title: "Success",
         description: `Website ${website ? 'updated' : 'created'} successfully.`,
@@ -80,8 +104,10 @@ export function WebsiteForm({ website, onSubmit, onCancel }: WebsiteFormProps) {
     }
   };
 
+  const { register } = useForm();
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label htmlFor="name">Name</label>
         <Input
@@ -132,14 +158,26 @@ export function WebsiteForm({ website, onSubmit, onCancel }: WebsiteFormProps) {
         />
       </div>
 
-      <div>
-        <label htmlFor="description">Description</label>
+      <div className="space-y-2">
+        <Label htmlFor="description">Short Description</Label>
         <Textarea
           id="description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          required
+          {...register('description', { required: true })}
+          placeholder="Brief description for the website card"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="extendedDescription">Extended Description</Label>
+        <Textarea
+          id="extendedDescription"
+          {...register('extendedDescription')}
+          placeholder="Detailed description for the website detail page (Tier 2 only)"
+          rows={6}
+        />
+        <p className="text-sm text-muted-foreground">
+          This description will only be shown on the detail page for Tier 2 websites.
+        </p>
       </div>
 
       <div>
@@ -170,14 +208,32 @@ export function WebsiteForm({ website, onSubmit, onCancel }: WebsiteFormProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="approved"
-          checked={formData.approved}
-          onChange={(e) => setFormData({ ...formData, approved: e.target.checked })}
-        />
-        <label htmlFor="approved">Approved</label>
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="approved"
+            checked={formData.approved}
+            onChange={(e) => setFormData({ ...formData, approved: e.target.checked })}
+          />
+          <label htmlFor="approved">Approved</label>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label htmlFor="tier">Tier</label>
+          <Select
+            value={formData.tier.toString()}
+            onValueChange={(value) => setFormData({ ...formData, tier: parseInt(value) })}
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder="Select tier" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">Tier 1</SelectItem>
+              <SelectItem value="2">Tier 2</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="flex justify-end gap-2">

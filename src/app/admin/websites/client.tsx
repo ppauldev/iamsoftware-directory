@@ -12,8 +12,10 @@ import {
 } from '@/components/ui/dialog';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { WebsiteForm } from '@/components/admin/WebsiteForm';
+import { SearchBar } from '@/components/SearchBar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Website {
   id: string;
@@ -25,6 +27,7 @@ interface Website {
   category: { id: string; name: string };
   owner: { name: string | null };
   tags: Array<{ id: string; name: string }>;
+  tier: number;
 }
 
 async function approveWebsite(id: string) {
@@ -52,6 +55,7 @@ async function createWebsite(data: any) {
 }
 
 export default function AdminWebsitesClient({ websites: initialWebsites }: { websites: Website[] }) {
+  console.log('Initial websites:', initialWebsites.map(w => ({ name: w.name, slug: w.slug })));
   const [websites, setWebsites] = useState(initialWebsites);
   const [selectedWebsite, setSelectedWebsite] = useState<Website | null>(null);
   const [action, setAction] = useState<'approve' | 'reject' | null>(null);
@@ -59,6 +63,8 @@ export default function AdminWebsitesClient({ websites: initialWebsites }: { web
   const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setWebsites(initialWebsites);
@@ -119,7 +125,10 @@ export default function AdminWebsitesClient({ websites: initialWebsites }: { web
       const res = await fetch(`/api/websites/${website.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          extendedDescription: website.tier === 2 ? data.extendedDescription : null,
+        }),
       });
       if (!res.ok) throw new Error('Failed to update website');
 
@@ -132,11 +141,49 @@ export default function AdminWebsitesClient({ websites: initialWebsites }: { web
     }
   }
 
+  const handleSort = (value: string) => {
+    const params = new URLSearchParams(searchParams?.toString());
+    params.set('sort', value);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleSearch = (term: string) => {
+    const params = new URLSearchParams(searchParams?.toString());
+    if (term) {
+      params.set('q', term);
+    } else {
+      params.delete('q');
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   return (
     <div>
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Manage Websites</h1>
-        <Button onClick={() => setIsCreating(true)}>Add Website</Button>
+        <div className="flex items-center gap-4">
+          <SearchBar
+            defaultValue={searchParams?.get('q') ?? ''}
+            onSearch={handleSearch}
+          />
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">Sort by</span>
+            <Select
+              defaultValue={searchParams?.get('sort') ?? 'status'}
+              onValueChange={handleSort}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="status">Status</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
+                <SelectItem value="newest">Newest</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button onClick={() => setIsCreating(true)}>Add Website</Button>
+        </div>
       </div>
 
       {isCreating && (
@@ -179,6 +226,10 @@ export default function AdminWebsitesClient({ websites: initialWebsites }: { web
                 <span className={`text-xs px-2 py-1 rounded ${website.approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                   }`}>
                   {website.approved ? 'Approved' : 'Pending'}
+                </span>
+                <span className={`text-xs px-2 py-1 rounded ${website.tier === 2 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                  }`}>
+                  Tier {website.tier}
                 </span>
               </div>
               <p className="text-sm text-gray-500">{website.url}</p>

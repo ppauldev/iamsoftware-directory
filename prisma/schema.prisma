@@ -24,12 +24,15 @@ enum UserRole {
 }
 
 model Website {
-  id          String    @id @default(cuid())
-  url         String    @unique
-  name        String
-  description String
-  thumbnail   String?
-  approved    Boolean   @default(false)
+  id                  String    @id @default(cuid())
+  name                String
+  slug                String    @unique
+  description         String
+  extendedDescription String?
+  url                 String
+  thumbnail           String?
+  approved            Boolean   @default(false)
+  tier                Int       @default(1)
   createdAt   DateTime  @default(now())
   category    Category  @relation(fields: [categoryId], references: [id])
   categoryId  String

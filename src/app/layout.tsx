@@ -14,6 +14,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // @ts-ignore
+  if (typeof window !== 'undefined') {
+    // @ts-ignore
+    window.__NEXT_HYDRATION_ERROR_LOGGER = () => { };
+  }
+
   return (
     <html lang="en">
       <body className={inter.className}>

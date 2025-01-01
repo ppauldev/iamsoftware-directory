@@ -7,8 +7,8 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'ui-avatars.com',
       },
+      // Add other domains you need here
     ],
-    domains: ['your-domain.com'],
   },
   async redirects() {
     return [
