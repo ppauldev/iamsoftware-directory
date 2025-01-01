@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Providers } from "./providers";
 import { SearchBar } from '@/components/SearchBar';
 import Link from 'next/link';
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,13 +25,13 @@ export default function RootLayout({
                 <Link href="/" className="text-xl font-bold">
                   AI Directory
                 </Link>
-                <SearchBar />
               </div>
               {children}
             </main>
             <Footer />
           </div>
         </Providers>
+        <Toaster />
       </body>
     </html>
   );

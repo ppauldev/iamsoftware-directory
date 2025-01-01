@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Website submission form with category and tag selection
+- Admin panel for managing website submissions
+- Approval workflow for new website submissions
+- Toast notifications for submission status
+- Confirmation dialogs for admin actions
 - SEO-friendly category URLs with proper slugs
 - Middleware for URL normalization and redirects
 - Multiple demo users, reviews, and ratings for better sorting
@@ -16,8 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Search highlighting for matched terms
 - Debounced search input
 - Tag and website search suggestions
+- Search functionality across all pages (main, category, and categories views)
+- Unified search bar placement next to sorting controls
+- Consistent search experience throughout the application
 
 ### Changed
+- Improved website submission UX with validation
+- Enhanced admin interface with better controls
 - Updated category navigation to handle active states correctly
 - Enhanced sorting functionality with proper data structure
 - Improved schema and seed script for better demo data
@@ -34,6 +44,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Search suggestion type safety
 
 ### Technical
+- Added server actions for website approval/rejection
+- Implemented toast notifications system
+- Added dialog components for confirmations
 - Added proper TypeScript types for components
 - Updated Prisma schema for better data relationships
 - Improved error handling in data fetching

@@ -47,6 +47,15 @@ export default function Header() {
               </Button>
             )}
           </nav>
+
+          <nav className="flex gap-4">
+            <Link
+              href="/admin/websites"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Admin
+            </Link>
+          </nav>
         </div>
       </div>
     </header>

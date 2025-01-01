@@ -10,6 +10,7 @@ import { CategoryNavSkeleton } from '@/components/CategoryNav.loading';
 import { SortSelect } from '@/components/SortSelect';
 import Link from 'next/link';
 import { Pagination, PaginationSkeleton } from '@/components/Pagination';
+import { SearchBar } from '@/components/SearchBar';
 
 interface HomePageProps {
   searchParams: {
@@ -35,7 +36,7 @@ async function getFeaturedWebsites(
         { name: { contains: search, mode: 'insensitive' as const } },
         { description: { contains: search, mode: 'insensitive' as const } },
         { category: { name: { contains: search, mode: 'insensitive' as const } } },
-        { tags: { some: { name: { contains: search, mode: 'insensitive' as const } } } }
+        { tags: { some: { name: { contains: search, mode: 'insensitive' as const } } } },
       ]
     } : {})
   };
@@ -123,9 +124,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <section className="mt-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Featured Websites</h2>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">Sort by</span>
-              <SortSelect defaultValue={sort} />
+            <div className="flex items-center gap-4">
+              <SearchBar />
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">Sort by</span>
+                <SortSelect defaultValue={sort} />
+              </div>
             </div>
           </div>
           <p>No websites found. Please add some websites first.</p>
@@ -150,9 +154,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <section className="mt-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Featured Websites</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">Sort by</span>
-            <SortSelect defaultValue={sort} />
+          <div className="flex items-center gap-4">
+            <SearchBar />
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Sort by</span>
+              <SortSelect defaultValue={sort} />
+            </div>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

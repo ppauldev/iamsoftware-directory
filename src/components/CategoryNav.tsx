@@ -5,11 +5,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createSlug } from '@/lib/utils';
 
 interface CategoryNavProps {
-  categories: Array<{
+  categories: {
     id: string;
     name: string;
     _count: { websites: number };
-  }>;
+  }[];
+  activeCategory?: {
+    id: string;
+    name: string;
+  };
 }
 
 export default function CategoryNav({ categories }: CategoryNavProps) {
