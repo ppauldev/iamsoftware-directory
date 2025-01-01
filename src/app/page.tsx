@@ -16,17 +16,29 @@ interface HomePageProps {
     categories?: string;
     sort?: 'rating' | 'newest' | 'name' | 'reviews';
     page?: string;
+    q?: string;
   }
 }
 
 async function getFeaturedWebsites(
   sort: 'rating' | 'newest' | 'name' | 'reviews' = 'rating',
-  page = 1
+  page = 1,
+  search?: string
 ) {
   const itemsPerPage = 12;
   const skip = (page - 1) * itemsPerPage;
 
-  const where = { approved: true };
+  const where = {
+    approved: true,
+    ...(search ? {
+      OR: [
+        { name: { contains: search, mode: 'insensitive' as const } },
+        { description: { contains: search, mode: 'insensitive' as const } },
+        { category: { name: { contains: search, mode: 'insensitive' as const } } },
+        { tags: { some: { name: { contains: search, mode: 'insensitive' as const } } } }
+      ]
+    } : {})
+  };
 
   const orderBy = (() => {
     switch (sort) {
@@ -98,8 +110,9 @@ async function getCategories() {
 export default async function HomePage({ searchParams }: HomePageProps) {
   const sort = (searchParams.sort || 'rating') as 'rating' | 'newest' | 'name' | 'reviews';
   const page = Math.max(1, Number(searchParams.page) || 1);
+  const search = searchParams.q;
   const allCategories = await getCategories();
-  const data = await getFeaturedWebsites(sort, page);
+  const data = await getFeaturedWebsites(sort, page, search);
 
   if (!data.websites.length) {
     return (
