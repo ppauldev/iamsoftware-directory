@@ -59,40 +59,18 @@ async function fetchAllData() {
   try {
     console.log('📊 Fetching data from Hygraph...');
 
-    // Define all the queries to fetch data
-    // These should match your existing queries in the app
+    // Fetch all companies with pagination
+    console.log('🔍 Fetching companies...');
+    const allCompanies = await fetchAllCompanies();
+    const companiesFilePath = path.join(dataDir, 'companies.json');
+    fs.writeFileSync(companiesFilePath, JSON.stringify({ companies: allCompanies }, null, 2));
+    console.log(`✅ Saved companies data to ${companiesFilePath} (${allCompanies.length} companies)`);
+
+    // Define queries for other data types
     const queries = {
-      companies: `
-        query GetAllCompanies {
-          companies {
-            id
-            name
-            slug
-            description
-            url
-            rating
-            license
-            pricingModel
-            pricingDetails
-            productDocs
-            developerDocs
-            features
-            categories {
-              id
-              name
-              slug
-            }
-            tags {
-              id
-              name
-              slug
-            }
-          }
-        }
-      `,
       posts: `
         query GetAllPosts {
-          posts {
+          posts(first: 1000) {
             id
             title
             slug
@@ -129,6 +107,70 @@ async function fetchAllData() {
     console.error('❌ Error fetching data:', error);
     process.exit(1);
   }
+}
+
+// Function to fetch all companies with pagination
+async function fetchAllCompanies() {
+  const pageSize = 100; // Hygraph's maximum page size
+  let hasMore = true;
+  let skip = 0;
+  const allCompanies = [];
+
+  while (hasMore) {
+    const query = `
+      query GetCompaniesPage($first: Int!, $skip: Int!) {
+        companies(first: $first, skip: $skip) {
+          id
+          name
+          slug
+          description
+          url
+          rating
+          license
+          pricingModel
+          pricingDetails
+          productDocs
+          developerDocs
+          features
+          categories {
+            id
+            name
+            slug
+          }
+          topCategories {
+            id
+            name
+            slug
+          }
+          tags {
+            id
+            name
+            slug
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      first: pageSize,
+      skip: skip
+    };
+
+    console.log(`Fetching companies page (skip: ${skip})...`);
+    const data = await fetchData(query, variables);
+
+    // Extract companies from the response
+    const companies = data.companies;
+    allCompanies.push(...companies);
+
+    // Check if we have more results to fetch
+    hasMore = companies.length === pageSize;
+    skip += pageSize;
+
+    console.log(`Fetched ${companies.length} companies (total: ${allCompanies.length})`);
+  }
+
+  return allCompanies;
 }
 
 // Run the script

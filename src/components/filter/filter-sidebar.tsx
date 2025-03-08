@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Company, Category, Tag } from '@/lib/graphql-client';
-import { FilterOptions, defaultFilterOptions, getAllCategories } from '@/lib/filter-utils';
+import { FilterOptions, defaultFilterOptions, getAllCategories, filterCompanies } from '@/lib/filter-utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,12 +28,13 @@ interface FilterSidebarProps {
   companies: Company[];
 }
 
-// Helper function to get tags by category
-function getTagsByCategory(companies: Company[]): Map<string, Tag[]> {
+// Helper function to get tags by category, only including tags that appear in filtered companies
+function getTagsByCategory(companies: Company[], filteredCompanies: Company[] = []): Map<string, Tag[]> {
   const tagsByCategoryMap = new Map<string, Map<string, Tag>>();
+  const companiesToUse = filteredCompanies.length > 0 ? filteredCompanies : companies;
 
-  // First, collect all tags by category
-  companies.forEach(company => {
+  // First, collect all tags by category from companies that pass the current filter
+  companiesToUse.forEach(company => {
     company.categories.forEach(category => {
       if (!tagsByCategoryMap.has(category.id)) {
         tagsByCategoryMap.set(category.id, new Map<string, Tag>());
@@ -49,26 +50,40 @@ function getTagsByCategory(companies: Company[]): Map<string, Tag[]> {
     });
   });
 
-  // Convert Maps to arrays
+  // Convert to the expected return type
   const result = new Map<string, Tag[]>();
   tagsByCategoryMap.forEach((tagsMap, categoryId) => {
-    result.set(categoryId, Array.from(tagsMap.values()));
+    result.set(categoryId, Array.from(tagsMap.values()).sort((a, b) => a.name.localeCompare(b.name)));
   });
 
   return result;
 }
 
 export function FilterSidebar({ companies }: FilterSidebarProps) {
-  const [filterOptions, setFilterOptions] = useState<FilterOptions>(defaultFilterOptions);
+  const [tags, setTags] = useState<Map<string, Tag[]>>(new Map());
   const [categories, setCategories] = useState<Category[]>([]);
-  const [tagsByCategory, setTagsByCategory] = useState<Map<string, Tag[]>>(new Map());
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>(defaultFilterOptions);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   // Extract all unique categories and tags from companies
   useEffect(() => {
-    setCategories(getAllCategories(companies));
-    setTagsByCategory(getTagsByCategory(companies));
-  }, [companies]);
+    // Get filtered companies based on current filters, but excluding the category filter
+    const getFilteredCompaniesForCategoryDisplay = () => {
+      const { searchTerm, selectedTags, minRating } = filterOptions;
+      const tempFilter = { searchTerm, selectedCategories: [], selectedTags, minRating };
+      return filterCompanies(companies, tempFilter);
+    };
+
+    const filteredCompaniesForCategories = getFilteredCompaniesForCategoryDisplay();
+
+    // Get categories only from companies that match other filters
+    const availableCategories = getAllCategories(filteredCompaniesForCategories);
+    setCategories(availableCategories);
+
+    // Get tags by category, only from companies that match criteria
+    const tagsMap = getTagsByCategory(companies, filteredCompaniesForCategories);
+    setTags(tagsMap);
+  }, [companies, filterOptions.searchTerm, filterOptions.selectedTags, filterOptions.minRating, filterOptions]);
 
   // Update filter options when changed
   useEffect(() => {
@@ -101,7 +116,7 @@ export function FilterSidebar({ companies }: FilterSidebarProps) {
       // If unchecking a category, also unselect all its tags
       let selectedTags = [...prev.selectedTags];
       if (!checked) {
-        const categoryTags = tagsByCategory.get(categoryId) || [];
+        const categoryTags = tags.get(categoryId) || [];
         const categoryTagIds = categoryTags.map(tag => tag.id);
         selectedTags = selectedTags.filter(tagId => !categoryTagIds.includes(tagId));
       }
@@ -255,7 +270,7 @@ export function FilterSidebar({ companies }: FilterSidebarProps) {
               <div className="max-h-80 overflow-y-auto pr-2">
                 <Accordion type="multiple" className="space-y-1">
                   {categories.map((category) => {
-                    const categoryTags = tagsByCategory.get(category.id) || [];
+                    const categoryTags = tags.get(category.id) || [];
                     const isExpanded = expandedCategories.has(category.id);
 
                     return (

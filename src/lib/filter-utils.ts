@@ -44,31 +44,45 @@ export function filterCompanies(companies: Company[], filterOptions: FilterOptio
 // Get all unique categories from companies
 export function getAllCategories(companies: Company[]): Category[] {
   const categoriesMap = new Map<string, Category>();
+  const categoryCounts = new Map<string, number>();
 
   companies.forEach(company => {
     company.categories.forEach(category => {
       if (!categoriesMap.has(category.id)) {
         categoriesMap.set(category.id, category);
+        categoryCounts.set(category.id, 1);
+      } else {
+        categoryCounts.set(category.id, (categoryCounts.get(category.id) || 0) + 1);
       }
     });
   });
 
-  return Array.from(categoriesMap.values());
+  // Only return categories that are associated with at least one company
+  return Array.from(categoriesMap.values())
+    .filter(category => (categoryCounts.get(category.id) || 0) > 0)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 // Get all unique tags from companies
 export function getAllTags(companies: Company[]): Tag[] {
   const tagsMap = new Map<string, Tag>();
+  const tagCounts = new Map<string, number>();
 
   companies.forEach(company => {
     company.tags.forEach(tag => {
       if (!tagsMap.has(tag.id)) {
         tagsMap.set(tag.id, tag);
+        tagCounts.set(tag.id, 1);
+      } else {
+        tagCounts.set(tag.id, (tagCounts.get(tag.id) || 0) + 1);
       }
     });
   });
 
-  return Array.from(tagsMap.values());
+  // Only return tags that are associated with at least one company
+  return Array.from(tagsMap.values())
+    .filter(tag => (tagCounts.get(tag.id) || 0) > 0)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 // Pagination utility
