@@ -120,7 +120,86 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Add enhanced markdown code highlighting */
+.prose pre {
+  overflow-x: auto;
+  background-color: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  font-size: 0.9em;
+  font-family: var(--font-geist-mono);
+}
+
+.prose code {
+  font-family: var(--font-geist-mono);
+}
+
+/* Style markdown blockquotes */
+.prose blockquote {
+  position: relative;
+  font-style: italic;
+  border-left-width: 4px;
+  border-left-color: hsl(var(--primary) / 0.3);
+  margin-left: 0;
+}
+
+/* Style markdown tables */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--border));
+}
+
+.prose table thead {
+  background-color: hsl(var(--muted));
+}
+
+.prose table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.prose table td {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.prose table tr:nth-child(even) {
+  background-color: hsl(var(--muted) / 0.3);
+}
+
+/* Style markdown horizontal rule */
+.prose hr {
+  border: none;
+  border-top: 1px solid hsl(var(--border));
+  margin: 2rem 0;
+}
+
+/* SVG icon inversion for dark mode */
+.dark .invert-in-dark {
+  filter: invert(1);
+}
+
+/* Favicon dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
   }
 }

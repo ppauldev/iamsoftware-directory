@@ -1,0 +1,27 @@
+{
+  "posts": [
+    {
+      "id": "cm7ym7fi4fdqm07n0un932d62",
+      "title": "Getting Started with Identity and Access Management",
+      "slug": "getting-started-with-iam",
+      "date": "2025-03-07",
+      "author": "Phillip Paul",
+      "excerpt": "...",
+      "keywords": [
+        "Test 1",
+        "Test 2",
+        "Test 3"
+      ],
+      "relatedContent": {
+        "markdown": "# Test h1\n## Test h2\n### Test h3\nNo content added yet\n\n"
+      },
+      "relatedCompanies": [
+        {
+          "id": "cm7xvgrwrq3rq07myzgzjcxmr",
+          "name": "SailPoint",
+          "slug": "sailpoint"
+        }
+      ]
+    }
+  ]
+}

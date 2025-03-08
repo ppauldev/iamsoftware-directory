@@ -1,0 +1,34 @@
+{
+  "companies": [
+    {
+      "id": "cm7xvgrwrq3rq07myzgzjcxmr",
+      "name": "SailPoint",
+      "slug": "sailpoint",
+      "description": "SailPoint specializes in identity security solutions, offering a unified platform that enhances IT efficiency and mitigates cyber risks. Their core products include IdentityIQ and the Identity Security Cloud, which provide advanced capabilities such as entitlement management and data access security. Catering to various industries, including education, healthcare, and finance, SailPoint emphasizes a zero-trust approach and compliance maintenance. Their self-guided demos and extensive resources, such as the Identity Hub and training programs, empower organizations to effectively manage identity security challenges.",
+      "url": "https://www.sailpoint.com",
+      "rating": 0,
+      "license": null,
+      "pricingModel": null,
+      "pricingDetails": null,
+      "productDocs": "https://documentation.sailpoint.com",
+      "developerDocs": "https://developer.sailpoint.com",
+      "features": [
+        "HR Import"
+      ],
+      "categories": [
+        {
+          "id": "cm7xvbjx2417t07n3u4l3e0tk",
+          "name": "User Onboarding",
+          "slug": "user-onboarding"
+        }
+      ],
+      "tags": [
+        {
+          "id": "cm7xvbf6wpwwt07my3rqkbh4c",
+          "name": "Automated Provisioning",
+          "slug": "automated-provisioning"
+        }
+      ]
+    }
+  ]
+}
