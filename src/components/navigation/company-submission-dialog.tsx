@@ -38,7 +38,7 @@ export function CompanySubmissionDialog({ open, onOpenChange }: CompanySubmissio
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/submit-company', {
+      const response = await fetch('/api/submit-company/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
