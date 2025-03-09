@@ -28,11 +28,11 @@ export default async function Home() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          <aside className="w-full lg:w-1/5 lg:sticky lg:top-24 lg:self-start">
+          <aside className="w-full lg:w-1/4 lg:sticky lg:top-24 lg:self-start">
             <FilterSidebar companies={companies} />
           </aside>
 
-          <div className="w-full lg:w-4/5">
+          <div className="w-full lg:w-3/4">
             <CompanyGrid companies={companies} />
           </div>
         </div>

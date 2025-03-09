@@ -64,26 +64,28 @@ export function FilterSidebar({ companies }: FilterSidebarProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>(defaultFilterOptions);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [showTopShadow, setShowTopShadow] = useState(false);
+  const [showBottomShadow, setShowBottomShadow] = useState(false);
 
   // Extract all unique categories and tags from companies
   useEffect(() => {
-    // Get filtered companies based on current filters, but excluding the category filter
+    // Get filtered companies based on current filters, but excluding the category and tag filters
     const getFilteredCompaniesForCategoryDisplay = () => {
-      const { searchTerm, selectedTags, minRating } = filterOptions;
-      const tempFilter = { searchTerm, selectedCategories: [], selectedTags, minRating };
+      const { searchTerm, minRating } = filterOptions;
+      const tempFilter = { searchTerm, selectedCategories: [], selectedTags: [], minRating };
       return filterCompanies(companies, tempFilter);
     };
 
     const filteredCompaniesForCategories = getFilteredCompaniesForCategoryDisplay();
 
-    // Get categories only from companies that match other filters
+    // Get categories only from companies that match other filters (search and rating)
     const availableCategories = getAllCategories(filteredCompaniesForCategories);
     setCategories(availableCategories);
 
-    // Get tags by category, only from companies that match criteria
-    const tagsMap = getTagsByCategory(companies, filteredCompaniesForCategories);
+    // For tags, we want to show all tags for selected categories
+    const tagsMap = getTagsByCategory(companies, companies);
     setTags(tagsMap);
-  }, [companies, filterOptions.searchTerm, filterOptions.selectedTags, filterOptions.minRating, filterOptions]);
+  }, [companies, filterOptions.searchTerm, filterOptions.minRating]);
 
   // Update filter options when changed
   useEffect(() => {
@@ -195,10 +197,32 @@ export function FilterSidebar({ companies }: FilterSidebarProps) {
     setExpandedCategories(new Set());
   };
 
+  // Handle scroll events for the categories section
+  const handleCategoriesScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const isAtTop = target.scrollTop === 0;
+    const isAtBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < 1;
+
+    setShowTopShadow(!isAtTop);
+    setShowBottomShadow(!isAtBottom);
+  };
+
+  // Initialize shadows on mount and when categories change
+  useEffect(() => {
+    const categoriesContainer = document.querySelector('.categories-scroll')?.parentElement;
+    if (categoriesContainer) {
+      const isAtTop = categoriesContainer.scrollTop === 0;
+      const isAtBottom = Math.abs(categoriesContainer.scrollHeight - categoriesContainer.scrollTop - categoriesContainer.clientHeight) < 1;
+
+      setShowTopShadow(!isAtTop);
+      setShowBottomShadow(!isAtBottom);
+    }
+  }, [categories, expandedCategories]);
+
   return (
-    <div className="space-y-6 border rounded-lg p-6 bg-card shadow-sm">
+    <div className="space-y-4 border rounded-lg p-4 bg-card shadow-sm">
       <div>
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Filters</h2>
 
           <Button
@@ -218,9 +242,9 @@ export function FilterSidebar({ companies }: FilterSidebarProps) {
           </Button>
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* Search */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="search" className="text-sm font-medium">Search</Label>
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -245,7 +269,7 @@ export function FilterSidebar({ companies }: FilterSidebarProps) {
           </div>
 
           {/* Rating */}
-          <div className="space-y-3 pt-2">
+          <div className="space-y-2">
             <div className="flex justify-between">
               <Label htmlFor="rating" className="text-sm font-medium">Minimum Rating</Label>
               <span className="text-sm text-muted-foreground">
@@ -259,83 +283,123 @@ export function FilterSidebar({ companies }: FilterSidebarProps) {
               step={1}
               value={[filterOptions.minRating]}
               onValueChange={handleRatingChange}
-              className="py-2"
+              className="py-1"
             />
           </div>
 
           {/* Categories with nested Tags */}
           {categories.length > 0 && (
-            <div className="space-y-3 pt-2 border-t">
+            <div className="space-y-2 pt-2 border-t">
               <Label className="text-sm font-medium">Categories & Tags</Label>
-              <div className="max-h-80 overflow-y-auto pr-2">
-                <Accordion type="multiple" className="space-y-1">
-                  {categories.map((category) => {
-                    const categoryTags = tags.get(category.id) || [];
-                    const isExpanded = expandedCategories.has(category.id);
+              <div className="relative">
+                {showTopShadow && (
+                  <div className="absolute top-0 left-0 right-1 h-16 bg-gradient-to-b from-card from-0% to-transparent to-100% pointer-events-none z-10 shadow-[inset_0_16px_16px_-16px_rgba(0,0,0,0.25)] transition-opacity duration-200"></div>
+                )}
+                {showBottomShadow && (
+                  <div className="absolute bottom-0 left-0 right-1 h-16 bg-gradient-to-t from-card from-0% to-transparent to-100% pointer-events-none z-10 shadow-[inset_0_-16px_16px_-16px_rgba(0,0,0,0.25)] transition-opacity duration-200"></div>
+                )}
+                <div
+                  className="max-h-[calc(100vh-24rem)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] pr-1"
+                  onScroll={handleCategoriesScroll}
+                >
+                  <style jsx global>{`
+                    .categories-scroll::-webkit-scrollbar {
+                      display: none;
+                    }
+                    .categories-scroll:hover::-webkit-scrollbar {
+                      display: none;
+                    }
+                    .categories-scroll::-webkit-scrollbar-track {
+                      background: transparent;
+                    }
+                    .categories-scroll::-webkit-scrollbar-thumb {
+                      background-color: rgb(0 0 0 / 0.15);
+                      border-radius: 2px;
+                    }
+                    .dark .categories-scroll::-webkit-scrollbar-thumb {
+                      background-color: rgb(255 255 255 / 0.15);
+                    }
+                    /* Add dark mode support for the gradients */
+                    .dark .absolute.top-0 {
+                      background-image: linear-gradient(to bottom, hsl(var(--card)) 0%, transparent 100%);
+                      box-shadow: inset 0 16px 16px -16px rgba(0,0,0,0.5);
+                    }
+                    .dark .absolute.bottom-0 {
+                      background-image: linear-gradient(to top, hsl(var(--card)) 0%, transparent 100%);
+                      box-shadow: inset 0 -16px 16px -16px rgba(0,0,0,0.5);
+                    }
+                  `}</style>
+                  <div className="categories-scroll">
+                    <Accordion type="multiple" className="space-y-1">
+                      {categories.map((category) => {
+                        const categoryTags = tags.get(category.id) || [];
+                        const isExpanded = expandedCategories.has(category.id);
 
-                    return (
-                      <AccordionItem
-                        key={category.id}
-                        value={category.id}
-                        className="border px-2 rounded-md mb-1 data-[state=open]:bg-muted/30"
-                      >
-                        <div className="flex items-center py-2">
-                          <Checkbox
-                            id={`category-${category.id}`}
-                            checked={filterOptions.selectedCategories.includes(category.id)}
-                            onCheckedChange={(checked: boolean | 'indeterminate') =>
-                              handleCategoryChange(category.id, checked === true)
-                            }
-                            className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground mr-2"
-                          />
-                          <Label
-                            htmlFor={`category-${category.id}`}
-                            className="text-sm font-medium cursor-pointer flex-1"
+                        return (
+                          <AccordionItem
+                            key={category.id}
+                            value={category.id}
+                            className="border px-2 rounded-md mb-1 data-[state=open]:bg-muted/30"
                           >
-                            {category.name}
-                          </Label>
+                            <div className="flex items-center py-2">
+                              <Checkbox
+                                id={`category-${category.id}`}
+                                checked={filterOptions.selectedCategories.includes(category.id)}
+                                onCheckedChange={(checked: boolean | 'indeterminate') =>
+                                  handleCategoryChange(category.id, checked === true)
+                                }
+                                className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground mr-2"
+                              />
+                              <Label
+                                htmlFor={`category-${category.id}`}
+                                className="text-sm font-medium cursor-pointer flex-1"
+                              >
+                                {category.name}
+                              </Label>
 
-                          {categoryTags.length > 0 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0 hover:bg-muted"
-                              onClick={() => toggleCategoryExpansion(category.id)}
-                            >
-                              {isExpanded ?
-                                <Minus className="h-3.5 w-3.5" /> :
-                                <Plus className="h-3.5 w-3.5" />
-                              }
-                            </Button>
-                          )}
-                        </div>
-
-                        {categoryTags.length > 0 && isExpanded && (
-                          <div className="pl-6 pb-2 space-y-2">
-                            {categoryTags.map((tag) => (
-                              <div key={tag.id} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`tag-${tag.id}`}
-                                  checked={filterOptions.selectedTags.includes(tag.id)}
-                                  onCheckedChange={(checked: boolean | 'indeterminate') =>
-                                    handleTagChange(tag.id, checked === true, category.id)
-                                  }
-                                  className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                                />
-                                <Label
-                                  htmlFor={`tag-${tag.id}`}
-                                  className="text-sm font-normal cursor-pointer leading-tight"
+                              {categoryTags.length > 0 && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 hover:bg-muted"
+                                  onClick={() => toggleCategoryExpansion(category.id)}
                                 >
-                                  {tag.name}
-                                </Label>
+                                  {isExpanded ?
+                                    <Minus className="h-3.5 w-3.5" /> :
+                                    <Plus className="h-3.5 w-3.5" />
+                                  }
+                                </Button>
+                              )}
+                            </div>
+
+                            {categoryTags.length > 0 && isExpanded && (
+                              <div className="pl-6 pb-2 space-y-2">
+                                {categoryTags.map((tag) => (
+                                  <div key={tag.id} className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`tag-${tag.id}`}
+                                      checked={filterOptions.selectedTags.includes(tag.id)}
+                                      onCheckedChange={(checked: boolean | 'indeterminate') =>
+                                        handleTagChange(tag.id, checked === true, category.id)
+                                      }
+                                      className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                                    />
+                                    <Label
+                                      htmlFor={`tag-${tag.id}`}
+                                      className="text-sm font-normal cursor-pointer leading-tight"
+                                    >
+                                      {tag.name}
+                                    </Label>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
-                        )}
-                      </AccordionItem>
-                    );
-                  })}
-                </Accordion>
+                            )}
+                          </AccordionItem>
+                        );
+                      })}
+                    </Accordion>
+                  </div>
+                </div>
               </div>
             </div>
           )}

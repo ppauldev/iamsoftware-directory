@@ -15,13 +15,7 @@
       "relatedContent": {
         "markdown": "# Test h1\n## Test h2\n### Test h3\nNo content added yet\n\n"
       },
-      "relatedCompanies": [
-        {
-          "id": "cm7xvgrwrq3rq07myzgzjcxmr",
-          "name": "SailPoint",
-          "slug": "sailpoint"
-        }
-      ]
+      "relatedCompanies": []
     }
   ]
 }
