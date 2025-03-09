@@ -1,13 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { CompanySubmission } from '@/lib/email-utils';
+import { Mail } from 'lucide-react';
+
+// Custom X icon component
+function XIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
+      <path
+        fill="currentColor"
+        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+      />
+    </svg>
+  );
+}
 
 interface CompanySubmissionDialogProps {
   open: boolean;
@@ -15,115 +22,36 @@ interface CompanySubmissionDialogProps {
 }
 
 export function CompanySubmissionDialog({ open, onOpenChange }: CompanySubmissionDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<CompanySubmission>({
-    name: '',
-    url: '',
-    description: '',
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.name || !formData.url) {
-      toast.error('Company name and URL are required');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch('/api/submit-company/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success('Company submission received. Thank you!');
-        setFormData({ name: '', url: '', description: '' });
-        onOpenChange(false);
-      } else {
-        toast.error(data.message || 'Failed to submit company');
-      }
-    } catch (error) {
-      console.error('Error submitting company:', error);
-      toast.error('An error occurred. Please try again later.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Propose a Company</DialogTitle>
           <DialogDescription>
-            Submit a company to be added to the IAM Directory.
+            Choose how you would like to submit a company to the IAM Directory.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Company Name <span className="text-red-500">*</span></Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter company name"
-              required
-            />
-          </div>
+        <div className="flex flex-col gap-4 py-6">
+          <Button
+            disabled
+            className="w-full flex items-center gap-2 h-12"
+            variant="outline"
+          >
+            <Mail className="h-5 w-5" />
+            Submit via Email
+            <span className="text-xs text-muted-foreground ml-2">(Coming Soon)</span>
+          </Button>
 
-          <div className="space-y-2">
-            <Label htmlFor="url">Website URL <span className="text-red-500">*</span></Label>
-            <Input
-              id="url"
-              name="url"
-              value={formData.url}
-              onChange={handleChange}
-              placeholder="https://example.com"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Brief description of the company and its IAM offerings"
-              rows={4}
-            />
-          </div>
-
-          <DialogFooter className="pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Submit'}
-            </Button>
-          </DialogFooter>
-        </form>
+          <Button
+            className="w-full flex items-center gap-2 h-12 cursor-pointer"
+            variant="outline"
+            onClick={() => window.open('https://www.x.com/phillippaulx', '_blank')}
+          >
+            <XIcon />
+            Submit via x.com
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
