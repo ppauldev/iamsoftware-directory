@@ -97,22 +97,6 @@ export async function executeQuery<T>(query: string, variables: Record<string, u
       ) || [];
       // Load categoryUrls and tagUrls from static data or create dummy URLs
       if (company) {
-        // If static data doesn't include categoryUrls or tagUrls, create them
-        // using the format: /categories/{slug} and /tags/{slug}
-        if (!company.categoryUrls) {
-          company.categoryUrls = {};
-          company.categories.forEach(category => {
-            company.categoryUrls![category.id] = `/categories/${category.slug}`;
-          });
-        }
-
-        if (!company.tagUrls) {
-          company.tagUrls = {};
-          company.tags.forEach(tag => {
-            company.tagUrls![tag.id] = `/tags/${tag.slug}`;
-          });
-        }
-
         return { company, posts: relatedPosts } as T;
       }
     }
