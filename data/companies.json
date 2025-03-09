@@ -12,6 +12,46 @@
       "pricingDetails": "",
       "productDocs": "https://documentation.okta.com",
       "developerDocs": "https://developer.okta.com",
+      "categoryUrls": [
+        {
+          "id": "okta-user-authentication",
+          "url": "https://www.okta.com/demo/user-authentication",
+          "categoryId": "category-user-authentication",
+          "softwareId": "software-okta"
+        }
+      ],
+      "tagUrls": [
+        {
+          "id": "okta-passwordless-authentication",
+          "url": "https://www.okta.com/passwordless-authentication",
+          "tagId": "tag-passwordless-authentication",
+          "softwareId": "software-okta"
+        },
+        {
+          "id": "okta-attribute-based-access-control-abac",
+          "url": "https://www.okta.com/blog/2020/09/attribute-based-access-control-abac",
+          "tagId": "tag-attribute-based-access-control-abac",
+          "softwareId": "software-okta"
+        },
+        {
+          "id": "okta-single-sign-on-sso",
+          "url": "https://www.okta.com/blog/2021/02/single-sign-on-sso",
+          "tagId": "tag-single-sign-on-sso",
+          "softwareId": "software-okta"
+        },
+        {
+          "id": "okta-multi-factor-authentication",
+          "url": "https://www.okta.com/demo/multi-factor-authentication",
+          "tagId": "tag-multi-factor-authentication",
+          "softwareId": "software-okta"
+        },
+        {
+          "id": "okta-automated-provisioning",
+          "url": "https://www.okta.com/identity-101/automated-provisioning",
+          "tagId": "tag-automated-provisioning",
+          "softwareId": "software-okta"
+        }
+      ],
       "features": [
         "Secure access management",
         "User authentication services",
@@ -101,6 +141,27 @@
       "pricingDetails": "",
       "productDocs": "https://documentation.auth0.com",
       "developerDocs": "https://developer.auth0.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "auth0-passwordless-authentication",
+          "url": "https://auth0.com/resources/whitepapers/passwordless-authentication",
+          "tagId": "tag-passwordless-authentication",
+          "softwareId": "software-auth0"
+        },
+        {
+          "id": "auth0-multi-factor-authentication",
+          "url": "https://auth0.com/docs/secure/multi-factor-authentication/multi-factor-authentication-developer-resources",
+          "tagId": "tag-multi-factor-authentication",
+          "softwareId": "software-auth0"
+        },
+        {
+          "id": "auth0-profile-management",
+          "url": "https://auth0.com/docs/get-started/architecture-scenarios/business-to-consumer/profile-management",
+          "tagId": "tag-profile-management",
+          "softwareId": "software-auth0"
+        }
+      ],
       "features": [
         "Rapid integration of authentication for web applications",
         "Support for mobile application authentication",
@@ -165,6 +226,21 @@
       "pricingDetails": "",
       "productDocs": "https://documentation.onelogin.com",
       "developerDocs": "https://developer.onelogin.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "onelogin-passwordless-authentication",
+          "url": "https://www.onelogin.com/learn/passwordless-authentication",
+          "tagId": "tag-passwordless-authentication",
+          "softwareId": "software-onelogin"
+        },
+        {
+          "id": "onelogin-multi-factor-authentication",
+          "url": "https://www.onelogin.com/de-de/product/multi-factor-authentication",
+          "tagId": "tag-multi-factor-authentication",
+          "softwareId": "software-onelogin"
+        }
+      ],
       "features": [
         "Single Sign-On for seamless user access",
         "Multi-Factor Authentication (MFA) for enhanced security",
@@ -214,6 +290,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -249,6 +327,40 @@
       "pricingDetails": "",
       "productDocs": "https://documentation.pingidentity.com",
       "developerDocs": "https://developer.pingidentity.com",
+      "categoryUrls": [
+        {
+          "id": "ping-identity-directory-services",
+          "url": "https://docs.pingidentity.com/pingds/7.3/getting-started/directory-services.html",
+          "categoryId": "category-directory-services",
+          "softwareId": "software-ping-identity"
+        }
+      ],
+      "tagUrls": [
+        {
+          "id": "ping-identity-multi-factor-authentication",
+          "url": "https://www.pingidentity.com/en/platform/capabilities/multi-factor-authentication.html",
+          "tagId": "tag-multi-factor-authentication",
+          "softwareId": "software-ping-identity"
+        },
+        {
+          "id": "ping-identity-passwordless-authentication",
+          "url": "https://www.pingidentity.com/en/resources/identity-fundamentals/authentication/passwordless-authentication/fido.html",
+          "tagId": "tag-passwordless-authentication",
+          "softwareId": "software-ping-identity"
+        },
+        {
+          "id": "ping-identity-federated-identity-management",
+          "url": "https://www.pingidentity.com/en/resources/identity-fundamentals/authentication/federated-identity-management.html",
+          "tagId": "tag-federated-identity-management",
+          "softwareId": "software-ping-identity"
+        },
+        {
+          "id": "ping-identity-policy-based-access-control",
+          "url": "https://www.pingidentity.com/en/resources/blog/post/policy-based-access-control.html",
+          "tagId": "tag-policy-based-access-control",
+          "softwareId": "software-ping-identity"
+        }
+      ],
       "features": [
         "Identity security for digital interactions",
         "Frictionless user experience management",
@@ -332,6 +444,15 @@
       "pricingDetails": "",
       "productDocs": "https://documentation.pingidentity.com",
       "developerDocs": "https://developer.pingidentity.com",
+      "categoryUrls": [
+        {
+          "id": "forgerock-directory-services",
+          "url": "https://docs.pingidentity.com/pingds/7.3/getting-started/directory-services.html",
+          "categoryId": "category-directory-services",
+          "softwareId": "software-forgerock"
+        }
+      ],
+      "tagUrls": [],
       "features": [
         "Identity security for digital interactions",
         "Frictionless user experience management",
@@ -369,6 +490,21 @@
       "pricingDetails": "",
       "productDocs": "https://documentation.sailpoint.com",
       "developerDocs": "https://developer.sailpoint.com",
+      "categoryUrls": [
+        {
+          "id": "sailpoint-compliance-audit",
+          "url": "https://www.sailpoint.com/identity-library/compliance-audit",
+          "categoryId": "category-compliance-audit",
+          "softwareId": "software-sailpoint"
+        },
+        {
+          "id": "sailpoint-user-authentication",
+          "url": "https://www.sailpoint.com/identity-library/user-authentication",
+          "categoryId": "category-user-authentication",
+          "softwareId": "software-sailpoint"
+        }
+      ],
+      "tagUrls": [],
       "features": [
         "Unified identity management across platforms",
         "Automated user provisioning and deprovisioning",
@@ -417,6 +553,40 @@
       "pricingDetails": "",
       "productDocs": "https://docs.jumpcloud.com",
       "developerDocs": "https://docs.jumpcloud.com",
+      "categoryUrls": [
+        {
+          "id": "jumpcloud-user-provisioning-deprovisioning",
+          "url": "https://jumpcloud.com/wp-content/uploads/2020/05/user-provisioning-deprovisioning.jpg",
+          "categoryId": "category-user-provisioning-deprovisioning",
+          "softwareId": "software-jumpcloud"
+        }
+      ],
+      "tagUrls": [
+        {
+          "id": "jumpcloud-password-rotation",
+          "url": "https://jumpcloud.com/blog/password-rotation",
+          "tagId": "tag-password-rotation",
+          "softwareId": "software-jumpcloud"
+        },
+        {
+          "id": "jumpcloud-active-directory-integration",
+          "url": "https://jumpcloud.com/wp-content/uploads/2023/11/Active-Directory-integration.png",
+          "tagId": "tag-active-directory-integration",
+          "softwareId": "software-jumpcloud"
+        },
+        {
+          "id": "jumpcloud-hr-system-integration",
+          "url": "https://jumpcloud.com/daas-product/hr-system-integration",
+          "tagId": "tag-hr-system-integration",
+          "softwareId": "software-jumpcloud"
+        },
+        {
+          "id": "jumpcloud-passwordless-authentication",
+          "url": "https://jumpcloud.com/use-cases/passwordless-authentication",
+          "tagId": "tag-passwordless-authentication",
+          "softwareId": "software-jumpcloud"
+        }
+      ],
       "features": [
         "Cross-platform device management for Windows, Mac, Linux, Android",
         "Cloud-based directory for user and device management",
@@ -506,6 +676,21 @@
       "pricingDetails": "",
       "productDocs": "https://documentation.axiomatics.com",
       "developerDocs": "https://developers.axiomatics.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "axiomatics-attribute-based-access-control-abac",
+          "url": "https://axiomatics.com/resources/reference-library/attribute-based-access-control-abac",
+          "tagId": "tag-attribute-based-access-control-abac",
+          "softwareId": "software-axiomatics"
+        },
+        {
+          "id": "axiomatics-role-based-access-control-rbac",
+          "url": "https://axiomatics.com/resources/reference-library/role-based-access-control-rbac",
+          "tagId": "tag-role-based-access-control-rbac",
+          "softwareId": "software-axiomatics"
+        }
+      ],
       "features": [
         "Fine-grained access controls",
         "Dynamic attribute-based access",
@@ -554,6 +739,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -589,6 +776,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -618,6 +807,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -653,6 +844,51 @@
       "pricingDetails": "",
       "productDocs": "https://docs.delinea.com",
       "developerDocs": "https://developer.delinea.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "thycotic-session-recording",
+          "url": "https://delinea.com/products/secret-server/features/session-recording",
+          "tagId": "tag-session-recording",
+          "softwareId": "software-thycotic"
+        },
+        {
+          "id": "thycotic-role-based-access-control-rbac",
+          "url": "https://delinea.com/products/secret-server/features/role-based-access-control-rbac",
+          "tagId": "tag-role-based-access-control-rbac",
+          "softwareId": "software-thycotic"
+        },
+        {
+          "id": "thycotic-active-directory-integration",
+          "url": "https://delinea.com/blog/active-directory-integration",
+          "tagId": "tag-active-directory-integration",
+          "softwareId": "software-thycotic"
+        },
+        {
+          "id": "thycotic-multi-factor-authentication",
+          "url": "https://delinea.com/products/secret-server/features/multi-factor-authentication",
+          "tagId": "tag-multi-factor-authentication",
+          "softwareId": "software-thycotic"
+        },
+        {
+          "id": "thycotic-passwordless-authentication",
+          "url": "https://delinea.com/blog/passwordless-authentication",
+          "tagId": "tag-passwordless-authentication",
+          "softwareId": "software-thycotic"
+        },
+        {
+          "id": "thycotic-single-sign-on-sso",
+          "url": "https://delinea.com/what-is/single-sign-on-sso",
+          "tagId": "tag-single-sign-on-sso",
+          "softwareId": "software-thycotic"
+        },
+        {
+          "id": "thycotic-policy-based-access-control",
+          "url": "https://delinea.com/blog/policy-based-access-control",
+          "tagId": "tag-policy-based-access-control",
+          "softwareId": "software-thycotic"
+        }
+      ],
       "features": [
         "Privileged Access Management (PAM) solutions",
         "Real-time security for hybrid enterprises",
@@ -756,6 +992,15 @@
       "pricingDetails": "",
       "productDocs": "https://documentation.lastpass.com",
       "developerDocs": "https://developer.lastpass.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "lastpass-passwordless-authentication",
+          "url": "https://www.lastpass.com/security/passwordless-authentication",
+          "tagId": "tag-passwordless-authentication",
+          "softwareId": "software-lastpass"
+        }
+      ],
       "features": [
         "Single-sign on (SSO) for streamlined access",
         "Adaptive multi-factor authentication (MFA) solutions",
@@ -800,6 +1045,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -835,6 +1082,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -870,6 +1119,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -905,6 +1156,51 @@
       "pricingDetails": "",
       "productDocs": "https://docs.delinea.com",
       "developerDocs": "https://developer.delinea.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "delinea-session-recording",
+          "url": "https://delinea.com/products/secret-server/features/session-recording",
+          "tagId": "tag-session-recording",
+          "softwareId": "software-delinea"
+        },
+        {
+          "id": "delinea-role-based-access-control-rbac",
+          "url": "https://delinea.com/products/secret-server/features/role-based-access-control-rbac",
+          "tagId": "tag-role-based-access-control-rbac",
+          "softwareId": "software-delinea"
+        },
+        {
+          "id": "delinea-active-directory-integration",
+          "url": "https://delinea.com/blog/active-directory-integration",
+          "tagId": "tag-active-directory-integration",
+          "softwareId": "software-delinea"
+        },
+        {
+          "id": "delinea-multi-factor-authentication",
+          "url": "https://delinea.com/products/secret-server/features/multi-factor-authentication",
+          "tagId": "tag-multi-factor-authentication",
+          "softwareId": "software-delinea"
+        },
+        {
+          "id": "delinea-passwordless-authentication",
+          "url": "https://delinea.com/blog/passwordless-authentication",
+          "tagId": "tag-passwordless-authentication",
+          "softwareId": "software-delinea"
+        },
+        {
+          "id": "delinea-single-sign-on-sso",
+          "url": "https://delinea.com/what-is/single-sign-on-sso",
+          "tagId": "tag-single-sign-on-sso",
+          "softwareId": "software-delinea"
+        },
+        {
+          "id": "delinea-policy-based-access-control",
+          "url": "https://delinea.com/blog/policy-based-access-control",
+          "tagId": "tag-policy-based-access-control",
+          "softwareId": "software-delinea"
+        }
+      ],
       "features": [
         "Intelligent privileged access management (PAM)",
         "Real-time identity threat detection and response",
@@ -1009,6 +1305,15 @@
       "pricingDetails": "",
       "productDocs": "https://docs.loginradius.com",
       "developerDocs": "https://docs.loginradius.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "loginradius-multi-factor-authentication",
+          "url": "https://www.loginradius.com/docs/api/v2/customer-identity-api/multi-factor-authentication/backup-codes/mfa-backup-code-by-uid",
+          "tagId": "tag-multi-factor-authentication",
+          "softwareId": "software-loginradius"
+        }
+      ],
       "features": [
         "Single Sign-On (SSO) for seamless user access",
         "Multi-Factor Authentication (MFA) for enhanced security",
@@ -1053,6 +1358,15 @@
       "pricingDetails": "",
       "productDocs": "https://docs.kissflow.com",
       "developerDocs": "https://developer.kissflow.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "kissflow-workflow-automation",
+          "url": "https://kissflow.com/workflow/workflow-automation/christmas-automated-workflows",
+          "tagId": "tag-workflow-automation",
+          "softwareId": "software-kissflow"
+        }
+      ],
       "features": [
         "AI-powered app development tools",
         "Low-code and no-code app builder",
@@ -1097,6 +1411,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -1132,6 +1448,21 @@
       "pricingDetails": "",
       "productDocs": "https://help.talend.com",
       "developerDocs": "https://api.talend.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "talend-data-quality-management",
+          "url": "https://www.talend.com/uk/resources/data-quality-management",
+          "tagId": "tag-data-quality-management",
+          "softwareId": "software-talend"
+        },
+        {
+          "id": "talend-single-sign-on-sso",
+          "url": "https://help.qlik.com/talend/en-US/talend-cloud-physical-reference-architecture/Cloud/single-sign-on-sso",
+          "tagId": "tag-single-sign-on-sso",
+          "softwareId": "software-talend"
+        }
+      ],
       "features": [
         "Scalable data management solution",
         "Cloud-independent data fabric",
@@ -1191,6 +1522,22 @@
       "pricingDetails": "",
       "productDocs": "https://docs.oracle.com",
       "developerDocs": "https://developer.oracle.com",
+      "categoryUrls": [
+        {
+          "id": "oracle-directory-services",
+          "url": "https://www.oracle.com/security/identity-management/directory-services",
+          "categoryId": "category-directory-services",
+          "softwareId": "software-oracle"
+        }
+      ],
+      "tagUrls": [
+        {
+          "id": "oracle-single-sign-on-sso",
+          "url": "https://www.oracle.com/security/identity-management/single-sign-on-sso",
+          "tagId": "tag-single-sign-on-sso",
+          "softwareId": "software-oracle"
+        }
+      ],
       "features": [
         "Centralized user directory management",
         "Multi-protocol support for SSO",
@@ -1244,6 +1591,15 @@
       "pricingDetails": "",
       "productDocs": "https://docs.alation.com",
       "developerDocs": "https://developer.alation.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "alation-workflow-automation",
+          "url": "https://www.alation.com/product/workflow-automation",
+          "tagId": "tag-workflow-automation",
+          "softwareId": "software-alation"
+        }
+      ],
       "features": [
         "AI-driven data intelligence capabilities",
         "100+ pre-built connectors for metadata integration",
@@ -1288,6 +1644,21 @@
       "pricingDetails": "",
       "productDocs": "https://help.alteryx.com",
       "developerDocs": "https://developer.alteryx.com",
+      "categoryUrls": [],
+      "tagUrls": [
+        {
+          "id": "trifacta-data-encryption",
+          "url": "https://help.alteryx.com/aac/en/auto-insights/data-security/data-encryption.html",
+          "tagId": "tag-data-encryption",
+          "softwareId": "software-trifacta"
+        },
+        {
+          "id": "trifacta-single-sign-on-sso",
+          "url": "https://help.alteryx.com/aic/en/auto-insights-classic/manage-accounts/single-sign-on--sso-.html",
+          "tagId": "tag-single-sign-on-sso",
+          "softwareId": "software-trifacta"
+        }
+      ],
       "features": [
         "Cloud-native data preparation solution",
         "Data profiling capabilities",
@@ -1346,6 +1717,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {
@@ -1381,6 +1754,8 @@
       "pricingDetails": null,
       "productDocs": null,
       "developerDocs": null,
+      "categoryUrls": [],
+      "tagUrls": [],
       "features": [],
       "categories": [
         {

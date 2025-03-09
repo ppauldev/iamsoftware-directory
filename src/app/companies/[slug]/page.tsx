@@ -74,23 +74,25 @@ export default async function CompanyPage({
 
     // Create URLs for categories
     company.categories.forEach(category => {
-      // Try to use provided URLs from backend if they exist
-      if (company.categoryUrls && company.categoryUrls[category.id]) {
-        categoryUrls[category.id] = company.categoryUrls[category.id];
+      // Try to find a matching URL from the categoryUrls array
+      const customUrlEntry = company.categoryUrls?.find(cu => cu.categoryId === category.slug);
+      if (customUrlEntry?.url) {
+        categoryUrls[category.id] = customUrlEntry.url;
       } else {
-        // Otherwise generate a standard URL format
-        categoryUrls[category.id] = `/categories/${category.slug}`;
+        // Fallback to just the category slug if no URL is available
+        categoryUrls[category.id] = "";
       }
     });
 
     // Create URLs for tags
     company.tags.forEach(tag => {
-      // Try to use provided URLs from backend if they exist
-      if (company.tagUrls && company.tagUrls[tag.id]) {
-        tagUrls[tag.id] = company.tagUrls[tag.id];
+      // Try to find a matching URL from the tagUrls array
+      const customUrlEntry = company.tagUrls?.find(tu => tu.tagId === tag.slug);
+      if (customUrlEntry?.url) {
+        tagUrls[tag.id] = customUrlEntry.url;
       } else {
-        // Otherwise generate a standard URL format
-        tagUrls[tag.id] = `/tags/${tag.slug}`;
+        // Fallback to just the tag slug if no URL is available
+        tagUrls[tag.id] = ""
       }
     });
     return (
@@ -184,18 +186,31 @@ export default async function CompanyPage({
                     Categories
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {company.categories.map((category) => (
-                      <a
-                        key={category.id}
-                        href={categoryUrls[category.id]}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs px-2.5 py-1.5 bg-muted rounded-md hover:bg-gradient-to-r hover:from-primary/80 hover:to-primary hover:text-primary-foreground transition-all duration-300 flex items-center gap-1"
-                      >
-                        <ExternalLink size={10} className="flex-shrink-0" />
-                        {category.name}
-                      </a>
-                    ))}
+                    {company.categories.map((category) => {
+                      const hasUrl = company.categoryUrls?.some(cu => cu.categoryId === category.slug);
+
+                      const Badge = (
+                        <span className={`text-xs px-2.5 py-1.5 bg-muted rounded-md ${hasUrl ? 'hover:bg-gradient-to-r hover:from-primary/80 hover:to-primary hover:text-primary-foreground transition-all duration-300' : ''} flex items-center gap-1`}>
+                          {hasUrl && <ExternalLink size={10} className="flex-shrink-0" />}
+                          {category.name}
+                        </span>
+                      );
+
+                      return hasUrl ? (
+                        <a
+                          key={category.id}
+                          href={categoryUrls[category.id]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {Badge}
+                        </a>
+                      ) : (
+                        <div key={category.id}>
+                          {Badge}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -228,18 +243,31 @@ export default async function CompanyPage({
                     Tags
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {company.tags.map((tag) => (
-                      <a
-                        key={tag.id}
-                        href={tagUrls[tag.id]}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs px-2.5 py-1.5 bg-muted rounded-md hover:bg-gradient-to-r hover:from-primary/80 hover:to-primary hover:text-primary-foreground transition-all duration-300 flex items-center gap-1"
-                      >
-                        <ExternalLink size={10} className="flex-shrink-0" />
-                        {tag.name}
-                      </a>
-                    ))}
+                    {company.tags.map((tag) => {
+                      const hasUrl = company.tagUrls?.some(tu => tu.tagId === tag.slug);
+
+                      const Badge = (
+                        <span className={`text-xs px-2.5 py-1.5 bg-muted rounded-md ${hasUrl ? 'hover:bg-gradient-to-r hover:from-primary/80 hover:to-primary hover:text-primary-foreground transition-all duration-300' : ''} flex items-center gap-1`}>
+                          {hasUrl && <ExternalLink size={10} className="flex-shrink-0" />}
+                          {tag.name}
+                        </span>
+                      );
+
+                      return hasUrl ? (
+                        <a
+                          key={tag.id}
+                          href={tagUrls[tag.id]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {Badge}
+                        </a>
+                      ) : (
+                        <div key={tag.id}>
+                          {Badge}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}

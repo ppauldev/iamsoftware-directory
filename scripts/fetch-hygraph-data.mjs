@@ -131,6 +131,8 @@ async function fetchAllCompanies() {
           pricingDetails
           productDocs
           developerDocs
+          categoryUrls
+          tagUrls
           features
           categories {
             id

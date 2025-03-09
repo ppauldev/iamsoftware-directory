@@ -85,7 +85,7 @@ export function FilterSidebar({ companies }: FilterSidebarProps) {
     // For tags, we want to show all tags for selected categories
     const tagsMap = getTagsByCategory(companies, companies);
     setTags(tagsMap);
-  }, [companies, filterOptions.searchTerm, filterOptions.minRating]);
+  }, [companies, filterOptions]);
 
   // Update filter options when changed
   useEffect(() => {

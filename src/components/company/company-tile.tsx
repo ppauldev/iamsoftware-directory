@@ -21,8 +21,6 @@ export function CompanyTile({ company }: CompanyTileProps) {
   const remainingCategories = company.categories.length - displayedCategories.length;
 
   // Debugging log
-  console.log(`Company ${company.name}: topCategories=${company.topCategories?.length || 0}, categories=${company.categories.length}`);
-
   return (
     <Card className="h-full flex flex-col hover:shadow-md transition-shadow border border-muted overflow-hidden">
       <CardHeader className="pb-3">

@@ -180,6 +180,20 @@ export interface Tag {
   category?: Category;
 }
 
+interface CategoryUrl {
+  id: string;
+  url: string;
+  categoryId: string;
+  softwareId: string;
+}
+
+interface TagUrl {
+  id: string;
+  url: string;
+  tagId: string;
+  softwareId: string;
+}
+
 export interface Company {
   id: string;
   name: string;
@@ -197,8 +211,8 @@ export interface Company {
   topCategories: Category[];
   tags: Tag[];
   relatedPosts?: Post[];
-  categoryUrls?: Record<string, string>;
-  tagUrls?: Record<string, string>;
+  categoryUrls?: CategoryUrl[];
+  tagUrls?: TagUrl[];
 }
 
 export interface Post {

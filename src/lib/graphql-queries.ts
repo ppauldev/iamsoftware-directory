@@ -49,6 +49,8 @@ export const GET_COMPANY_BY_SLUG = gql`
       pricingDetails
       productDocs
       developerDocs
+      categoryUrls
+      tagUrls
       categories {
         id
         name
