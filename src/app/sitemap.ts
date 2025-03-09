@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next';
 import { executeQuery, AllCompaniesResponse, AllPostsResponse } from '@/lib/graphql-client';
 import { GET_ALL_COMPANIES, GET_ALL_POSTS } from '@/lib/graphql-queries';
 
+export const dynamic = 'force-static';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all companies and posts
   const companiesData = await executeQuery<AllCompaniesResponse>(GET_ALL_COMPANIES);
