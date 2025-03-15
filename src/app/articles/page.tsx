@@ -34,7 +34,7 @@ export default async function ArticlesPage() {
           {posts.map((post: Post) => (
             <Card key={post.id} className="flex flex-col h-full hover:shadow-md transition-shadow border border-muted">
               <CardHeader className="pb-4">
-                <CardTitle className="text-xl line-clamp-2">
+                <CardTitle className="text-xl line-clamp-3">
                   <Link href={`/articles/${post.slug}`} className="hover:underline">
                     {post.title}
                   </Link>
